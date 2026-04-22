@@ -352,7 +352,7 @@ export default function App() {
               ].map(([label, val], i) => (
                 <div key={i} style={styles.pfCard}>
                   <div style={styles.pfLabel}>{label}</div>
-                  <div style={{ ...styles.pfVal, color: i === 3 ? (pf.rate >= 0 ? "#10b981" : "#ef4444") : "#fff" }}>{val}</div>
+                  <div style={{ ...styles.pfVal, color: i === 3 ? (pf.rate >= 0 ? "#10b981" : "#ef4444") : "#1e293b" }}>{val}</div>
                 </div>
               ))}
             </div>
@@ -424,7 +424,7 @@ export default function App() {
               <div style={styles.tradeRight}>
                 {selectedStock ? (
                   <>
-                    <h3 style={{ color: "#fff", marginBottom: 16 }}>{selectedStock.name} ({selectedStock.code})</h3>
+                    <h3 style={{ color: "#1e293b", marginBottom: 16 }}>{selectedStock.name} ({selectedStock.code})</h3>
                     {(() => {
                       const p = prices[selectedStock.code];
                       const chg = p ? ((p.price - p.prevClose) / p.prevClose * 100) : 0;
@@ -449,12 +449,12 @@ export default function App() {
                     </div>
                     <div style={styles.qtyRow}>
                       {[-10, -1].map(d => <button key={d} style={styles.qtyBtn} onClick={() => setQty(q => Math.max(1, q + d))}>{d}</button>)}
-                      <span style={{ color: "#fff", fontSize: 18, fontWeight: 700 }}>{qty}</span>
+                      <span style={{ color: "#1e293b", fontSize: 18, fontWeight: 700 }}>{qty}</span>
                       {[1, 10].map(d => <button key={d} style={styles.qtyBtn} onClick={() => setQty(q => q + d)}>+{d}</button>)}
                     </div>
-                    <div style={styles.priceRow}><span style={{ color: "#9ca3af" }}>현재가</span><span style={{ color: "#fff" }}>{fmt(prices[selectedStock.code]?.price)}원</span></div>
-                    <div style={styles.priceRow}><span style={{ color: "#9ca3af" }}>예상 금액</span><span style={{ color: "#f59e0b", fontWeight: 700 }}>{fmt((prices[selectedStock.code]?.price ?? 0) * qty)}원</span></div>
-                    <div style={styles.priceRow}><span style={{ color: "#9ca3af" }}>보유 수량</span><span style={{ color: "#fff" }}>{user.holdings[selectedStock.code]?.qty ?? 0}주</span></div>
+                    <div style={styles.priceRow}><span style={{ color: "#64748b" }}>현재가</span><span style={{ color: "#1e293b" }}>{fmt(prices[selectedStock.code]?.price)}원</span></div>
+                    <div style={styles.priceRow}><span style={{ color: "#f59e0b" }}>예상 금액</span><span style={{ color: "#f59e0b", fontWeight: 700 }}>{fmt((prices[selectedStock.code]?.price ?? 0) * qty)}원</span></div>
+                    <div style={styles.priceRow}><span style={{ color: "#64748b" }}>보유 수량</span><span style={{ color: "#1e293b" }}>{user.holdings[selectedStock.code]?.qty ?? 0}주</span></div>
                     <button style={{ ...styles.btnPrimary, background: tradeMode === "buy" ? "#ef4444" : "#3b82f6", marginTop: 16 }}
                       onClick={executeTrade}>
                       {tradeMode === "buy" ? "매수하기" : "매도하기"}
@@ -622,13 +622,13 @@ export default function App() {
             <h2 style={styles.pageTitle}>👤 마이페이지</h2>
             <div style={styles.pfCard}>
               <div style={{ fontSize: 48, textAlign: "center", marginBottom: 8 }}>👤</div>
-              <div style={{ textAlign: "center", color: "#fff", fontSize: 20, fontWeight: 700 }}>{user.nickname}</div>
+              <div style={{ textAlign: "center", color: "#1e293b", fontSize: 20, fontWeight: 700 }}>{user.nickname}</div>
               <div style={{ textAlign: "center", color: "#9ca3af", fontSize: 14 }}>{user.id}</div>
               {user.isTeacher && <div style={{ textAlign: "center", color: "#f59e0b", marginTop: 4 }}>👩‍🏫 선생님</div>}
             </div>
             <h3 style={styles.sectionTitle}>닉네임 변경</h3>
             <p style={{ color: "#9ca3af", marginBottom: 12, fontSize: 14 }}>랭킹과 화면에 표시되는 이름을 변경할 수 있습니다.</p>
-            <p style={{ color: "#d1d5db", marginBottom: 8 }}>현재 닉네임: <strong style={{ color: "#fff" }}>{user.nickname}</strong></p>
+            <p style={{ color: "#334155", marginBottom: 8 }}>현재 닉네임: <strong style={{ color: "#1e293b" }}>{user.nickname}</strong></p>
             <div style={styles.flexRow}>
               <input style={{ ...styles.input, flex: 1 }} placeholder="새 닉네임 (최대 20자)" maxLength={20}
                 value={nicknameInput} onChange={e => setNicknameInput(e.target.value)} />
@@ -643,63 +643,63 @@ export default function App() {
 
 // ── 스타일 ──────────────────────────────────────────────────────────────
 const styles = {
-  root: { display: "flex", minHeight: "100vh", background: "#0f172a", fontFamily: "'Pretendard', 'Apple SD Gothic Neo', sans-serif", color: "#e2e8f0" },
-  sidebar: { width: 200, background: "#1e293b", display: "flex", flexDirection: "column", padding: "20px 12px", gap: 4, position: "sticky", top: 0, height: "100vh", overflowY: "auto" },
-  logo: { fontSize: 20, fontWeight: 800, color: "#fff", padding: "8px 12px", marginBottom: 16 },
-  navBtn: { display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 8, border: "none", background: "transparent", color: "#94a3b8", cursor: "pointer", fontSize: 14, fontWeight: 500, textAlign: "left", transition: "all .15s" },
-  navBtnActive: { background: "#334155", color: "#fff" },
+  root: { display: "flex", minHeight: "100vh", background: "#f1f5f9", fontFamily: "'Pretendard', 'Apple SD Gothic Neo', sans-serif", color: "#1e293b" },
+  sidebar: { width: 200, background: "#fff", borderRight: "1px solid #e2e8f0", display: "flex", flexDirection: "column", padding: "20px 12px", gap: 4, position: "sticky", top: 0, height: "100vh", overflowY: "auto" },
+  logo: { fontSize: 20, fontWeight: 800, color: "#6366f1", padding: "8px 12px", marginBottom: 16 },
+  navBtn: { display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", borderRadius: 8, border: "none", background: "transparent", color: "#64748b", cursor: "pointer", fontSize: 14, fontWeight: 500, textAlign: "left", transition: "all .15s" },
+  navBtnActive: { background: "#ede9fe", color: "#6366f1" },
   main: { flex: 1, padding: "32px 40px", overflowY: "auto" },
   page: { maxWidth: 900, margin: "0 auto" },
-  pageTitle: { fontSize: 24, fontWeight: 800, color: "#fff", marginBottom: 24 },
-  sectionTitle: { fontSize: 16, fontWeight: 700, color: "#e2e8f0", marginBottom: 12 },
+  pageTitle: { fontSize: 24, fontWeight: 800, color: "#1e293b", marginBottom: 24 },
+  sectionTitle: { fontSize: 16, fontWeight: 700, color: "#1e293b", marginBottom: 12 },
   pfGrid: { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 32 },
-  pfCard: { background: "#1e293b", borderRadius: 12, padding: 20 },
-  pfLabel: { fontSize: 13, color: "#9ca3af", marginBottom: 6 },
-  pfVal: { fontSize: 20, fontWeight: 700 },
-  table: { width: "100%", borderCollapse: "collapse", background: "#1e293b", borderRadius: 12, overflow: "hidden" },
-  th: { padding: "12px 16px", textAlign: "left", fontSize: 13, color: "#9ca3af", borderBottom: "1px solid #334155", background: "#162032" },
-  td: { padding: "12px 16px", fontSize: 14, color: "#d1d5db", borderBottom: "1px solid #1e293b" },
-  empty: { color: "#6b7280", textAlign: "center", padding: "40px 0" },
+  pfCard: { background: "#fff", borderRadius: 12, padding: 20, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" },
+  pfLabel: { fontSize: 13, color: "#64748b", marginBottom: 6 },
+  pfVal: { fontSize: 20, fontWeight: 700, color: "#1e293b" },
+  table: { width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: 12, overflow: "hidden", border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" },
+  th: { padding: "12px 16px", textAlign: "left", fontSize: 13, color: "#64748b", borderBottom: "1px solid #e2e8f0", background: "#f8fafc" },
+  td: { padding: "12px 16px", fontSize: 14, color: "#334155", borderBottom: "1px solid #f1f5f9" },
+  empty: { color: "#94a3b8", textAlign: "center", padding: "40px 0" },
   // auth
   authWrap: { maxWidth: 480, margin: "60px auto", padding: "0 16px" },
-  authTitle: { fontSize: 32, fontWeight: 900, color: "#fff", textAlign: "center" },
-  authSub: { color: "#9ca3af", textAlign: "center", marginBottom: 20 },
+  authTitle: { fontSize: 32, fontWeight: 900, color: "#1e293b", textAlign: "center" },
+  authSub: { color: "#64748b", textAlign: "center", marginBottom: 20 },
   badges: { display: "flex", gap: 8, justifyContent: "center", marginBottom: 28, flexWrap: "wrap" },
-  badge: { background: "#334155", color: "#e2e8f0", padding: "6px 14px", borderRadius: 20, fontSize: 13 },
-  authTabs: { display: "flex", gap: 0, marginBottom: 20, background: "#1e293b", borderRadius: 10, padding: 4 },
-  authTabBtn: { flex: 1, padding: "10px", border: "none", background: "transparent", color: "#9ca3af", cursor: "pointer", borderRadius: 8, fontSize: 14, fontWeight: 600 },
-  authTabBtnActive: { background: "#334155", color: "#fff" },
+  badge: { background: "#ede9fe", color: "#6366f1", padding: "6px 14px", borderRadius: 20, fontSize: 13, fontWeight: 600 },
+  authTabs: { display: "flex", gap: 0, marginBottom: 20, background: "#f1f5f9", borderRadius: 10, padding: 4 },
+  authTabBtn: { flex: 1, padding: "10px", border: "none", background: "transparent", color: "#64748b", cursor: "pointer", borderRadius: 8, fontSize: 14, fontWeight: 600 },
+  authTabBtnActive: { background: "#fff", color: "#6366f1", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" },
   form: { display: "flex", flexDirection: "column", gap: 12 },
-  input: { padding: "12px 14px", background: "#1e293b", border: "1px solid #334155", borderRadius: 8, color: "#fff", fontSize: 14, outline: "none", width: "100%", boxSizing: "border-box" },
-  checkRow: { display: "flex", alignItems: "center", gap: 8, color: "#d1d5db", cursor: "pointer" },
+  input: { padding: "12px 14px", background: "#fff", border: "1px solid #cbd5e1", borderRadius: 8, color: "#1e293b", fontSize: 14, outline: "none", width: "100%", boxSizing: "border-box" },
+  checkRow: { display: "flex", alignItems: "center", gap: 8, color: "#334155", cursor: "pointer" },
   btnPrimary: { padding: "12px 0", background: "#6366f1", color: "#fff", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: "pointer", width: "100%" },
   // trade
   tradeLayout: { display: "flex", gap: 20 },
   tradeLeft: { width: 280, flexShrink: 0 },
-  tradeRight: { flex: 1, background: "#1e293b", borderRadius: 12, padding: 24, minHeight: 400 },
+  tradeRight: { flex: 1, background: "#fff", borderRadius: 12, padding: 24, minHeight: 400, border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" },
   marketTabs: { display: "flex", gap: 8, marginBottom: 12, marginTop: 8 },
-  mktBtn: { padding: "6px 16px", border: "1px solid #334155", borderRadius: 6, background: "transparent", color: "#9ca3af", cursor: "pointer", fontSize: 13 },
-  mktBtnActive: { background: "#334155", color: "#fff", borderColor: "#6366f1" },
+  mktBtn: { padding: "6px 16px", border: "1px solid #cbd5e1", borderRadius: 6, background: "#fff", color: "#64748b", cursor: "pointer", fontSize: 13 },
+  mktBtnActive: { background: "#ede9fe", color: "#6366f1", borderColor: "#6366f1" },
   stockList: { display: "flex", flexDirection: "column", gap: 2, maxHeight: "60vh", overflowY: "auto" },
-  stockRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", borderRadius: 8, cursor: "pointer", background: "#1e293b" },
-  stockRowSel: { background: "#334155", outline: "1px solid #6366f1" },
-  stockName: { fontSize: 14, fontWeight: 600, color: "#fff" },
-  stockCode: { fontSize: 12, color: "#6b7280" },
-  stockPrice: { fontSize: 14, fontWeight: 600, color: "#fff" },
-  bigPrice: { fontSize: 28, fontWeight: 800, color: "#fff", marginBottom: 4 },
-  priceDetail: { background: "#162032", borderRadius: 10, padding: 16, marginBottom: 16 },
-  priceRow: { display: "flex", justifyContent: "space-between", padding: "4px 0", fontSize: 14, color: "#9ca3af", borderBottom: "1px solid #1e293b" },
+  stockRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", borderRadius: 8, cursor: "pointer", background: "#fff", border: "1px solid #f1f5f9" },
+  stockRowSel: { background: "#ede9fe", outline: "1px solid #6366f1", border: "1px solid #6366f1" },
+  stockName: { fontSize: 14, fontWeight: 600, color: "#1e293b" },
+  stockCode: { fontSize: 12, color: "#94a3b8" },
+  stockPrice: { fontSize: 14, fontWeight: 600, color: "#1e293b" },
+  bigPrice: { fontSize: 28, fontWeight: 800, color: "#1e293b", marginBottom: 4 },
+  priceDetail: { background: "#f8fafc", borderRadius: 10, padding: 16, marginBottom: 16, border: "1px solid #e2e8f0" },
+  priceRow: { display: "flex", justifyContent: "space-between", padding: "4px 0", fontSize: 14, color: "#64748b", borderBottom: "1px solid #f1f5f9" },
   tradeModes: { display: "flex", gap: 8, marginBottom: 16 },
-  tradeModeBtn: { flex: 1, padding: "10px", border: "1px solid #334155", borderRadius: 8, background: "transparent", color: "#9ca3af", cursor: "pointer", fontWeight: 700, fontSize: 15 },
-  buyActive: { background: "#ef444420", color: "#ef4444", borderColor: "#ef4444" },
-  sellActive: { background: "#3b82f620", color: "#3b82f6", borderColor: "#3b82f6" },
+  tradeModeBtn: { flex: 1, padding: "10px", border: "1px solid #cbd5e1", borderRadius: 8, background: "#fff", color: "#64748b", cursor: "pointer", fontWeight: 700, fontSize: 15 },
+  buyActive: { background: "#fef2f2", color: "#ef4444", borderColor: "#ef4444" },
+  sellActive: { background: "#eff6ff", color: "#3b82f6", borderColor: "#3b82f6" },
   qtyRow: { display: "flex", alignItems: "center", gap: 12, marginBottom: 16, justifyContent: "center" },
-  qtyBtn: { padding: "6px 14px", background: "#334155", border: "none", borderRadius: 6, color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 700 },
-  noSelect: { color: "#6b7280", textAlign: "center", paddingTop: 80 },
+  qtyBtn: { padding: "6px 14px", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 6, color: "#334155", cursor: "pointer", fontSize: 14, fontWeight: 700 },
+  noSelect: { color: "#94a3b8", textAlign: "center", paddingTop: 80 },
   // admin
   flexRow: { display: "flex", gap: 12, alignItems: "center" },
-  teamChip: { display: "flex", alignItems: "center", gap: 6, background: "#334155", color: "#e2e8f0", padding: "6px 12px", borderRadius: 20, fontSize: 14 },
-  chipDel: { background: "transparent", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 14, lineHeight: 1 },
+  teamChip: { display: "flex", alignItems: "center", gap: 6, background: "#ede9fe", color: "#6366f1", padding: "6px 12px", borderRadius: 20, fontSize: 14, fontWeight: 600 },
+  chipDel: { background: "transparent", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: 14, lineHeight: 1 },
   // toast
-  toast: { position: "fixed", top: 24, right: 24, padding: "14px 24px", borderRadius: 10, color: "#fff", fontSize: 15, fontWeight: 600, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,.4)" },
+  toast: { position: "fixed", top: 24, right: 24, padding: "14px 24px", borderRadius: 10, color: "#fff", fontSize: 15, fontWeight: 600, zIndex: 9999, boxShadow: "0 4px 20px rgba(0,0,0,.15)" },
 };
