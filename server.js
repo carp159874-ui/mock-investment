@@ -3,55 +3,58 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+const FINNHUB_KEY = process.env.FINNHUB_KEY || "d7k69jpr01qnk4odoasgd7k69jpr01qnk4odoat0";
 
 app.use(express.json());
 
-// Yahoo Finance 주가 조회 API
+// Finnhub 심볼 변환
+function toFinnhubSymbol(code) {
+  if (code.endsWith(".KS")) return code; // 그대로
+  if (code.endsWith(".KQ")) return code.replace(".KQ", ".KQ"); // 그대로
+  return code; // 미국 주식
+}
+
+// 주가 조회 API
 app.get("/api/prices", async (req, res) => {
   const { symbols } = req.query;
   if (!symbols) return res.status(400).json({ error: "symbols required" });
 
   const symbolList = symbols.split(",").filter(Boolean);
+  const results = {};
 
   try {
-    const results = {};
-    const chunkSize = 20;
-
+    // Finnhub은 종목별로 개별 호출 필요 - 병렬로 처리
+    const chunkSize = 10;
     for (let i = 0; i < symbolList.length; i += chunkSize) {
       const chunk = symbolList.slice(i, i + chunkSize);
-      const symbolStr = chunk.join(",");
+      
+      await Promise.all(chunk.map(async (symbol) => {
+        try {
+          const [quoteRes, prevRes] = await Promise.all([
+            fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`),
+            fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`)
+          ]);
 
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbolStr)}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketDayHigh,regularMarketDayLow,regularMarketVolume,shortName,longName`,
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Accept": "application/json",
-          },
+          if (!quoteRes.ok) return;
+          const q = await quoteRes.json();
+
+          if (q.c && q.c > 0) {
+            results[symbol] = {
+              price: q.c,       // 현재가
+              prevClose: q.pc,  // 전일 종가
+              high: q.h,        // 고가
+              low: q.l,         // 저가
+              volume: null,     // Finnhub 무료플랜 거래량 미제공
+            };
+          }
+        } catch (e) {
+          console.error(`Error fetching ${symbol}:`, e.message);
         }
-      );
+      }));
 
-      if (!response.ok) {
-        console.error(`Yahoo Finance error: ${response.status}`);
-        continue;
-      }
-
-      const data = await response.json();
-      const quotes = data?.quoteResponse?.result || [];
-
-      quotes.forEach((q) => {
-        results[q.symbol] = {
-          price: q.regularMarketPrice ?? null,
-          prevClose: q.regularMarketPreviousClose ?? null,
-          high: q.regularMarketDayHigh ?? null,
-          low: q.regularMarketDayLow ?? null,
-          volume: q.regularMarketVolume ?? null,
-          name: q.shortName || q.longName || q.symbol,
-        };
-      });
-
+      // rate limit 방지 (분당 60회)
       if (i + chunkSize < symbolList.length) {
-        await new Promise((r) => setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 1000));
       }
     }
 
