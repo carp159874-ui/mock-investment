@@ -10,13 +10,10 @@ function isUSStock(symbol) {
   return !symbol.endsWith(".KS") && !symbol.endsWith(".KQ");
 }
 
-let yahooFinance;
-async function getYahoo() {
-  if (!yahooFinance) {
-    const mod = await import("yahoo-finance2");
-    yahooFinance = mod.default;
-  }
-  return yahooFinance;
+// yahoo-finance2 동적 import (ESM 패키지)
+async function fetchQuote(symbol) {
+  const { default: yf } = await import("yahoo-finance2");
+  return yf.quote(symbol, {}, { validateResult: false });
 }
 
 app.get("/api/prices", async (req, res) => {
@@ -27,7 +24,8 @@ app.get("/api/prices", async (req, res) => {
   const results = {};
   const chunkSize = 20;
 
-  const yf = await getYahoo();
+  // yahoo-finance2 먼저 로드
+  const { default: yf } = await import("yahoo-finance2");
 
   for (let i = 0; i < symbolList.length; i += chunkSize) {
     const chunk = symbolList.slice(i, i + chunkSize);
