@@ -10,22 +10,38 @@ function isUSStock(symbol) {
   return !symbol.endsWith(".KS") && !symbol.endsWith(".KQ");
 }
 
-// yahoo-finance2 초기화
 let yf = null;
 async function initYahoo() {
   if (yf) return yf;
   const mod = await import("yahoo-finance2");
-  // 여러 가지 export 형태 처리
+  console.log("mod keys:", Object.keys(mod));
+  console.log("mod.default type:", typeof mod.default);
+  console.log("mod.default keys:", mod.default ? Object.keys(mod.default) : "none");
+  
+  // mod.default.default 확인
+  if (mod.default && mod.default.default) {
+    console.log("mod.default.default keys:", Object.keys(mod.default.default));
+    if (typeof mod.default.default.quote === "function") {
+      yf = mod.default.default;
+      console.log("Using mod.default.default");
+      return yf;
+    }
+  }
   if (mod.default && typeof mod.default.quote === "function") {
     yf = mod.default;
-  } else if (mod.quote && typeof mod.quote === "function") {
-    yf = mod;
-  } else {
-    // 객체 전체를 확인
-    console.log("yahoo-finance2 exports:", Object.keys(mod));
-    yf = mod.default || mod;
+    console.log("Using mod.default");
+    return yf;
   }
-  return yf;
+  // 모든 키 탐색
+  for (const key of Object.keys(mod)) {
+    const val = mod[key];
+    if (val && typeof val.quote === "function") {
+      yf = val;
+      console.log("Using mod." + key);
+      return yf;
+    }
+  }
+  throw new Error("Cannot find quote function in yahoo-finance2");
 }
 
 app.get("/api/prices", async (req, res) => {
@@ -37,21 +53,13 @@ app.get("/api/prices", async (req, res) => {
 
   try {
     const yahoo = await initYahoo();
-    console.log("Yahoo type:", typeof yahoo, "quote:", typeof yahoo.quote);
-    
     const chunkSize = 20;
+
     for (let i = 0; i < symbolList.length; i += chunkSize) {
       const chunk = symbolList.slice(i, i + chunkSize);
-
       await Promise.all(chunk.map(async (symbol) => {
         try {
-          let quote;
-          if (typeof yahoo.quote === "function") {
-            quote = await yahoo.quote(symbol, {}, { validateResult: false });
-          } else if (typeof yahoo === "function") {
-            quote = await yahoo(symbol);
-          }
-          
+          const quote = await yahoo.quote(symbol, {}, { validateResult: false });
           if (quote && quote.regularMarketPrice) {
             results[symbol] = {
               price: quote.regularMarketPrice,
@@ -66,13 +74,12 @@ app.get("/api/prices", async (req, res) => {
           console.error(`Error ${symbol}:`, e.message);
         }
       }));
-
       if (i + chunkSize < symbolList.length) {
         await new Promise(r => setTimeout(r, 200));
       }
     }
   } catch (e) {
-    console.error("Yahoo init error:", e.message);
+    console.error("Yahoo error:", e.message);
   }
 
   console.log(`Fetched ${Object.keys(results).length}/${symbolList.length} symbols`);
@@ -80,15 +87,11 @@ app.get("/api/prices", async (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, "build")));
-
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
-  // 시작 시 yahoo-finance2 테스트
-  initYahoo().then(y => {
-    console.log("Yahoo loaded. Keys:", Object.keys(y).join(", "));
-  }).catch(e => console.error("Yahoo load failed:", e.message));
+  initYahoo().catch(e => console.error("Init failed:", e.message));
 });
