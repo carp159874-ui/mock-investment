@@ -431,7 +431,14 @@ export default function App() {
   const user = state.currentUser ? state.users[state.currentUser] : null;
   const pf = calcPortfolio(user);
   const markets = ["KOSPI", "KOSDAQ", "미국"];
-  const filteredStocks = STOCKS.filter(s => s.market === market && (s.name.includes(searchQ) || s.code.includes(searchQ)));
+  const seenCodes = new Set();
+  const filteredStocks = STOCKS.filter(s => {
+    if (s.market !== market) return false;
+    if (!s.name.includes(searchQ) && !s.code.includes(searchQ)) return false;
+    if (seenCodes.has(s.code)) return false;
+    seenCodes.add(s.code);
+    return true;
+  });
 
   return (
     <div style={S.root}>
