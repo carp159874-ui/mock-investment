@@ -1,6 +1,5 @@
 const express = require("express");
 const path = require("path");
-const yahooFinance = require("yahoo-finance2").default;
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -11,6 +10,15 @@ function isUSStock(symbol) {
   return !symbol.endsWith(".KS") && !symbol.endsWith(".KQ");
 }
 
+let yahooFinance;
+async function getYahoo() {
+  if (!yahooFinance) {
+    const mod = await import("yahoo-finance2");
+    yahooFinance = mod.default;
+  }
+  return yahooFinance;
+}
+
 app.get("/api/prices", async (req, res) => {
   const { symbols } = req.query;
   if (!symbols) return res.status(400).json({ error: "symbols required" });
@@ -19,12 +27,14 @@ app.get("/api/prices", async (req, res) => {
   const results = {};
   const chunkSize = 20;
 
+  const yf = await getYahoo();
+
   for (let i = 0; i < symbolList.length; i += chunkSize) {
     const chunk = symbolList.slice(i, i + chunkSize);
 
     await Promise.all(chunk.map(async (symbol) => {
       try {
-        const quote = await yahooFinance.quote(symbol, {}, { validateResult: false });
+        const quote = await yf.quote(symbol, {}, { validateResult: false });
         if (quote && quote.regularMarketPrice) {
           results[symbol] = {
             price: quote.regularMarketPrice,
