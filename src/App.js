@@ -5,7 +5,7 @@ const TEACHER_CODE = "TEACHER2024";
 const PRICE_REFRESH_INTERVAL = 60000;
 
 const STOCKS = [
-  // KOSPI 100
+  // ── KOSPI 100 ──
   { code: "005930.KS", name: "삼성전자", market: "KOSPI" },
   { code: "000660.KS", name: "SK하이닉스", market: "KOSPI" },
   { code: "207940.KS", name: "삼성바이오로직스", market: "KOSPI" },
@@ -96,17 +96,16 @@ const STOCKS = [
   { code: "006650.KS", name: "대한유화", market: "KOSPI" },
   { code: "001120.KS", name: "LX인터내셔널", market: "KOSPI" },
   { code: "008060.KS", name: "대덕전자", market: "KOSPI" },
-  { code: "004170.KS", name: "신세계", market: "KOSPI" },
   { code: "009420.KS", name: "한올바이오파마", market: "KOSPI" },
   { code: "032640.KS", name: "LG유플러스", market: "KOSPI" },
   { code: "006090.KS", name: "사조씨푸드", market: "KOSPI" },
-  { code: "047050.KS", name: "포스코인터내셔널", market: "KOSPI" },
-  { code: "005940.KS", name: "NH투자증권", market: "KOSPI" },
   { code: "016880.KS", name: "웅진", market: "KOSPI" },
   { code: "000157.KS", name: "두산", market: "KOSPI" },
   { code: "025270.KS", name: "서한", market: "KOSPI" },
+  { code: "002200.KS", name: "한국제지", market: "KOSPI" },
+  { code: "004170.KS", name: "이마트", market: "KOSPI" },
 
-  // KOSDAQ 100
+  // ── KOSDAQ 100 ──
   { code: "247540.KQ", name: "에코프로비엠", market: "KOSDAQ" },
   { code: "086520.KQ", name: "에코프로", market: "KOSDAQ" },
   { code: "196170.KQ", name: "알테오젠", market: "KOSDAQ" },
@@ -177,13 +176,16 @@ const STOCKS = [
   { code: "347700.KQ", name: "스피어파워", market: "KOSDAQ" },
   { code: "950120.KQ", name: "나노신소재", market: "KOSDAQ" },
   { code: "078130.KQ", name: "국일신동", market: "KOSDAQ" },
-  { code: "950030.KQ", name: "코이즈", market: "KOSDAQ" },
-  { code: "950010.KQ", name: "에스엔피월드", market: "KOSDAQ" },
-  { code: "950050.KQ", name: "마이크로컨텍솔", market: "KOSDAQ" },
-  { code: "950060.KQ", name: "코텍", market: "KOSDAQ" },
-  { code: "950090.KQ", name: "노바텍", market: "KOSDAQ" },
-  { code: "950100.KQ", name: "에스에스알", market: "KOSDAQ" },
-  { code: "950110.KQ", name: "SCI평가정보", market: "KOSDAQ" },
+  { code: "012450.KQ", name: "한화에어로스페이스", market: "KOSDAQ" },
+  { code: "060310.KQ", name: "3S", market: "KOSDAQ" },
+  { code: "092040.KQ", name: "야나두", market: "KOSDAQ" },
+  { code: "123040.KQ", name: "엠에스오토텍", market: "KOSDAQ" },
+  { code: "950040.KQ", name: "국일제지", market: "KOSDAQ" },
+  { code: "950190.KQ", name: "착한앤컴퍼니", market: "KOSDAQ" },
+  { code: "950270.KQ", name: "지엔코", market: "KOSDAQ" },
+  { code: "950290.KQ", name: "동아엘텍", market: "KOSDAQ" },
+  { code: "950300.KQ", name: "선익시스템", market: "KOSDAQ" },
+  { code: "950200.KQ", name: "파나진", market: "KOSDAQ" },
   { code: "950150.KQ", name: "푸드나무", market: "KOSDAQ" },
   { code: "950180.KQ", name: "한양디지텍", market: "KOSDAQ" },
   { code: "950210.KQ", name: "하나마이크론", market: "KOSDAQ" },
@@ -193,20 +195,15 @@ const STOCKS = [
   { code: "950250.KQ", name: "화신", market: "KOSDAQ" },
   { code: "950260.KQ", name: "엠씨넥스", market: "KOSDAQ" },
   { code: "317530.KQ", name: "캐리소프트", market: "KOSDAQ" },
-  { code: "012450.KQ", name: "한화에어로스페이스", market: "KOSDAQ" },
-  { code: "060310.KQ", name: "3S", market: "KOSDAQ" },
-  { code: "092040.KQ", name: "야나두", market: "KOSDAQ" },
-  { code: "123040.KQ", name: "엠에스오토텍", market: "KOSDAQ" },
-  { code: "950040.KQ", name: "국일제지", market: "KOSDAQ" },
-  { code: "950170.KQ", name: "JTC", market: "KOSDAQ" },
-  { code: "950190.KQ", name: "착한앤컴퍼니", market: "KOSDAQ" },
-  { code: "950270.KQ", name: "지엔코", market: "KOSDAQ" },
-  { code: "950280.KQ", name: "나우IB캐피탈", market: "KOSDAQ" },
-  { code: "950290.KQ", name: "동아엘텍", market: "KOSDAQ" },
-  { code: "950300.KQ", name: "선익시스템", market: "KOSDAQ" },
-  { code: "950200.KQ", name: "파나진", market: "KOSDAQ" },
+  { code: "950110.KQ", name: "SCI평가정보", market: "KOSDAQ" },
+  { code: "950100.KQ", name: "에스에스알", market: "KOSDAQ" },
+  { code: "950090.KQ", name: "노바텍", market: "KOSDAQ" },
+  { code: "950060.KQ", name: "코텍", market: "KOSDAQ" },
+  { code: "950050.KQ", name: "마이크로컨텍솔", market: "KOSDAQ" },
+  { code: "950030.KQ", name: "코이즈", market: "KOSDAQ" },
+  { code: "950010.KQ", name: "에스엔피월드", market: "KOSDAQ" },
 
-  // 미국 100
+  // ── 미국 100 ──
   { code: "AAPL", name: "Apple", market: "미국" },
   { code: "MSFT", name: "Microsoft", market: "미국" },
   { code: "NVDA", name: "NVIDIA", market: "미국" },
@@ -308,6 +305,16 @@ const STOCKS = [
   { code: "APH", name: "Amphenol", market: "미국" },
 ];
 
+// 미국 주식 여부
+const isUS = (code) => !code.endsWith(".KS") && !code.endsWith(".KQ");
+
+// 가격 포맷 (미국: $, 한국: 원)
+const fmtPrice = (price, code) => {
+  if (!price) return "-";
+  if (isUS(code)) return `$${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${Math.round(price).toLocaleString("ko-KR")}원`;
+};
+
 const fmt = (n) => n?.toLocaleString("ko-KR") ?? "-";
 const fmtRate = (r) => { if (r == null) return "-"; const s = r >= 0 ? "+" : ""; return `${s}${r.toFixed(2)}%`; };
 const load = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } };
@@ -386,9 +393,9 @@ export default function App() {
       if (user.cash < total) { showToast("잔액이 부족합니다.", "error"); return; }
       u.cash -= total;
       const prev = u.holdings[selectedStock.code];
-      if (prev) u.holdings[selectedStock.code] = { ...prev, qty: prev.qty + qty, avgPrice: Math.round((prev.avgPrice * prev.qty + price * qty) / (prev.qty + qty)) };
-      else u.holdings[selectedStock.code] = { code: selectedStock.code, name: selectedStock.name, qty, avgPrice: price };
-      u.trades.push({ type: "buy", code: selectedStock.code, name: selectedStock.name, qty, price, total, date: Date.now() });
+      if (prev) u.holdings[selectedStock.code] = { ...prev, qty: prev.qty + qty, avgPrice: (prev.avgPrice * prev.qty + price * qty) / (prev.qty + qty) };
+      else u.holdings[selectedStock.code] = { code: selectedStock.code, name: selectedStock.name, qty, avgPrice: price, isUS: isUS(selectedStock.code) };
+      u.trades.push({ type: "buy", code: selectedStock.code, name: selectedStock.name, qty, price, total, date: Date.now(), isUS: isUS(selectedStock.code) });
       showToast(`${selectedStock.name} ${qty}주 매수 완료!`);
     } else {
       const h = u.holdings[selectedStock.code];
@@ -396,7 +403,7 @@ export default function App() {
       u.cash += total;
       if (h.qty === qty) delete u.holdings[selectedStock.code];
       else u.holdings[selectedStock.code] = { ...h, qty: h.qty - qty };
-      u.trades.push({ type: "sell", code: selectedStock.code, name: selectedStock.name, qty, price, total, date: Date.now() });
+      u.trades.push({ type: "sell", code: selectedStock.code, name: selectedStock.name, qty, price, total, date: Date.now(), isUS: isUS(selectedStock.code) });
       showToast(`${selectedStock.name} ${qty}주 매도 완료!`);
     }
     persist({ ...state, users: { ...state.users, [state.currentUser]: u } });
@@ -471,7 +478,7 @@ export default function App() {
           <div style={S.page}>
             <h2 style={S.pageTitle}>내 포트폴리오</h2>
             <div style={S.pfGrid}>
-              {[["보유 현금", fmt(Math.round(pf.cash))+"원"],["주식 평가액", fmt(Math.round(pf.stockVal))+"원"],["총 자산", fmt(Math.round(pf.total))+"원"],["총 수익률", fmtRate(pf.rate)]].map(([label,val],i) => (
+              {[["보유 현금", `${fmt(Math.round(pf.cash))}원`],["주식 평가액", `${fmt(Math.round(pf.stockVal))}원`],["총 자산", `${fmt(Math.round(pf.total))}원`],["총 수익률", fmtRate(pf.rate)]].map(([label,val],i) => (
                 <div key={i} style={S.pfCard}><div style={S.pfLabel}>{label}</div><div style={{ ...S.pfVal, color: i===3?(pf.rate>=0?"#10b981":"#ef4444"):"#1e293b" }}>{val}</div></div>
               ))}
             </div>
@@ -483,7 +490,14 @@ export default function App() {
                   const cur = getCurrentPrice(h.code) ?? h.avgPrice;
                   const pnl = (cur - h.avgPrice) * h.qty;
                   const rate = ((cur - h.avgPrice) / h.avgPrice) * 100;
-                  return <tr key={h.code}><td style={S.td}>{h.name}</td><td style={S.td}>{fmt(h.qty)}주</td><td style={S.td}>{fmt(Math.round(h.avgPrice))}원</td><td style={S.td}>{fmt(Math.round(cur))}원</td><td style={{ ...S.td, color: pnl>=0?"#10b981":"#ef4444" }}>{fmt(Math.round(pnl))}원</td><td style={{ ...S.td, color: rate>=0?"#10b981":"#ef4444" }}>{fmtRate(rate)}</td></tr>;
+                  return <tr key={h.code}>
+                    <td style={S.td}>{h.name}</td>
+                    <td style={S.td}>{fmt(h.qty)}주</td>
+                    <td style={S.td}>{fmtPrice(h.avgPrice, h.code)}</td>
+                    <td style={S.td}>{fmtPrice(cur, h.code)}</td>
+                    <td style={{ ...S.td, color: pnl>=0?"#10b981":"#ef4444" }}>{isUS(h.code) ? `$${Math.abs(pnl).toFixed(2)}` : `${fmt(Math.round(Math.abs(pnl)))}원`}{pnl >= 0 ? " ▲" : " ▼"}</td>
+                    <td style={{ ...S.td, color: rate>=0?"#10b981":"#ef4444" }}>{fmtRate(rate)}</td>
+                  </tr>;
                 })}</tbody>
               </table>
             )}
@@ -503,7 +517,10 @@ export default function App() {
                   return (
                     <div key={s.code} style={{ ...S.stockRow, ...(selectedStock?.code===s.code?S.stockRowSel:{}) }} onClick={() => { setSelectedStock(s); setQty(1); }}>
                       <div><div style={S.stockName}>{s.name}</div><div style={S.stockCode}>{s.code}</div></div>
-                      <div style={{ textAlign:"right" }}><div style={S.stockPrice}>{p?.price?fmt(Math.round(p.price)):"-"}원</div><div style={{ color: chg>=0?"#ef4444":"#3b82f6", fontSize:12 }}>{p?fmtRate(chg):"-"}</div></div>
+                      <div style={{ textAlign:"right" }}>
+                        <div style={S.stockPrice}>{p?.price ? fmtPrice(p.price, s.code) : "-"}</div>
+                        <div style={{ color: chg>=0?"#ef4444":"#3b82f6", fontSize:12 }}>{p ? fmtRate(chg) : "-"}</div>
+                      </div>
                     </div>
                   );
                 })}</div>
@@ -514,12 +531,12 @@ export default function App() {
                     <h3 style={{ color:"#1e293b", marginBottom:16 }}>{selectedStock.name} ({selectedStock.code})</h3>
                     {(() => { const p = getPrice(selectedStock.code); const chg = p?.prevClose?((p.price-p.prevClose)/p.prevClose*100):0; return (
                       <div style={S.priceDetail}>
-                        <div style={S.bigPrice}>{p?.price?fmt(Math.round(p.price)):"-"}원</div>
-                        <div style={{ color: chg>=0?"#ef4444":"#3b82f6", marginBottom:8 }}>{p?fmtRate(chg):"-"}</div>
-                        <div style={S.priceRow}><span>전일종가</span><span>{p?.prevClose?fmt(Math.round(p.prevClose)):"-"}원</span></div>
-                        <div style={S.priceRow}><span>고가</span><span style={{ color:"#ef4444" }}>{p?.high?fmt(Math.round(p.high)):"-"}원</span></div>
-                        <div style={S.priceRow}><span>저가</span><span style={{ color:"#3b82f6" }}>{p?.low?fmt(Math.round(p.low)):"-"}원</span></div>
-                        <div style={S.priceRow}><span>거래량</span><span>{p?.volume?fmt(p.volume):"-"}</span></div>
+                        <div style={S.bigPrice}>{p?.price ? fmtPrice(p.price, selectedStock.code) : "-"}</div>
+                        <div style={{ color: chg>=0?"#ef4444":"#3b82f6", marginBottom:8 }}>{p ? fmtRate(chg) : "-"}</div>
+                        <div style={S.priceRow}><span>전일종가</span><span>{p?.prevClose ? fmtPrice(p.prevClose, selectedStock.code) : "-"}</span></div>
+                        <div style={S.priceRow}><span>고가</span><span style={{ color:"#ef4444" }}>{p?.high ? fmtPrice(p.high, selectedStock.code) : "-"}</span></div>
+                        <div style={S.priceRow}><span>저가</span><span style={{ color:"#3b82f6" }}>{p?.low ? fmtPrice(p.low, selectedStock.code) : "-"}</span></div>
+                        <div style={S.priceRow}><span>거래량</span><span>{p?.volume ? fmt(p.volume) : "-"}</span></div>
                       </div>
                     ); })()}
                     <div style={S.tradeModes}>{["buy","sell"].map(m => <button key={m} style={{ ...S.tradeModeBtn, ...(tradeMode===m?(m==="buy"?S.buyActive:S.sellActive):{}) }} onClick={() => setTradeMode(m)}>{m==="buy"?"매수":"매도"}</button>)}</div>
@@ -528,9 +545,9 @@ export default function App() {
                       <span style={{ color:"#1e293b", fontSize:18, fontWeight:700 }}>{qty}</span>
                       {[1,10].map(d => <button key={d} style={S.qtyBtn} onClick={() => setQty(q => q+d)}>+{d}</button>)}
                     </div>
-                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>현재가</span><span style={{ color:"#1e293b" }}>{getCurrentPrice(selectedStock.code)?fmt(Math.round(getCurrentPrice(selectedStock.code))):"-"}원</span></div>
-                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>예상 금액</span><span style={{ color:"#f59e0b", fontWeight:700 }}>{getCurrentPrice(selectedStock.code)?fmt(Math.round(getCurrentPrice(selectedStock.code)*qty)):"-"}원</span></div>
-                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>보유 수량</span><span style={{ color:"#1e293b" }}>{user.holdings[selectedStock.code]?.qty??0}주</span></div>
+                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>현재가</span><span style={{ color:"#1e293b" }}>{getCurrentPrice(selectedStock.code) ? fmtPrice(getCurrentPrice(selectedStock.code), selectedStock.code) : "-"}</span></div>
+                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>예상 금액</span><span style={{ color:"#f59e0b", fontWeight:700 }}>{getCurrentPrice(selectedStock.code) ? fmtPrice(getCurrentPrice(selectedStock.code) * qty, selectedStock.code) : "-"}</span></div>
+                    <div style={S.priceRow}><span style={{ color:"#64748b" }}>보유 수량</span><span style={{ color:"#1e293b" }}>{user.holdings[selectedStock.code]?.qty ?? 0}주</span></div>
                     <button style={{ ...S.btnPrimary, background: tradeMode==="buy"?"#ef4444":"#3b82f6", marginTop:16 }} onClick={executeTrade}>{tradeMode==="buy"?"매수하기":"매도하기"}</button>
                   </>
                 ) : <div style={S.noSelect}>좌측에서 종목을 선택하세요</div>}
@@ -545,7 +562,14 @@ export default function App() {
             {user.trades.length === 0 ? <p style={S.empty}>거래 내역이 없습니다.</p> : (
               <table style={S.table}>
                 <thead><tr>{["유형","종목","수량","가격","금액","일시"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
-                <tbody>{[...user.trades].reverse().map((t,i) => <tr key={i}><td style={{ ...S.td, color: t.type==="buy"?"#ef4444":"#3b82f6", fontWeight:700 }}>{t.type==="buy"?"매수":"매도"}</td><td style={S.td}>{t.name}</td><td style={S.td}>{fmt(t.qty)}주</td><td style={S.td}>{fmt(Math.round(t.price))}원</td><td style={S.td}>{fmt(Math.round(t.total))}원</td><td style={S.td}>{new Date(t.date).toLocaleString("ko-KR")}</td></tr>)}</tbody>
+                <tbody>{[...user.trades].reverse().map((t,i) => <tr key={i}>
+                  <td style={{ ...S.td, color: t.type==="buy"?"#ef4444":"#3b82f6", fontWeight:700 }}>{t.type==="buy"?"매수":"매도"}</td>
+                  <td style={S.td}>{t.name}</td>
+                  <td style={S.td}>{fmt(t.qty)}주</td>
+                  <td style={S.td}>{fmtPrice(t.price, t.code)}</td>
+                  <td style={S.td}>{fmtPrice(t.total, t.code)}</td>
+                  <td style={S.td}>{new Date(t.date).toLocaleString("ko-KR")}</td>
+                </tr>)}</tbody>
               </table>
             )}
           </div>
@@ -560,14 +584,15 @@ export default function App() {
                 <thead><tr>{["종목명","코드","현재가","전일비","등락률","거래량"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
                 <tbody>{STOCKS.filter(s => s.market===market).map(s => {
                   const p = getPrice(s.code);
-                  const diff = p?.prevClose?p.price-p.prevClose:null;
-                  const rate = p?.prevClose?(diff/p.prevClose*100):null;
+                  const diff = p?.prevClose ? p.price - p.prevClose : null;
+                  const rate = p?.prevClose ? (diff / p.prevClose * 100) : null;
                   return <tr key={s.code} style={{ cursor:"pointer" }} onClick={() => { setSelectedStock(s); setActiveTab("trade"); }}>
-                    <td style={S.td}>{s.name}</td><td style={S.td}>{s.code}</td>
-                    <td style={S.td}>{p?.price?fmt(Math.round(p.price)):"-"}원</td>
-                    <td style={{ ...S.td, color: diff>=0?"#ef4444":"#3b82f6" }}>{diff!=null?`${diff>=0?"▲":"▼"} ${fmt(Math.abs(Math.round(diff)))}`:"-"}</td>
-                    <td style={{ ...S.td, color: rate>=0?"#ef4444":"#3b82f6" }}>{rate!=null?fmtRate(rate):"-"}</td>
-                    <td style={S.td}>{p?.volume?fmt(p.volume):"-"}</td>
+                    <td style={S.td}>{s.name}</td>
+                    <td style={S.td}>{s.code}</td>
+                    <td style={S.td}>{p?.price ? fmtPrice(p.price, s.code) : "-"}</td>
+                    <td style={{ ...S.td, color: diff>=0?"#ef4444":"#3b82f6" }}>{diff!=null ? `${diff>=0?"▲":"▼"} ${isUS(s.code) ? Math.abs(diff).toFixed(2) : fmt(Math.abs(Math.round(diff)))}` : "-"}</td>
+                    <td style={{ ...S.td, color: rate>=0?"#ef4444":"#3b82f6" }}>{rate!=null ? fmtRate(rate) : "-"}</td>
+                    <td style={S.td}>{p?.volume ? fmt(p.volume) : "-"}</td>
                   </tr>;
                 })}</tbody>
               </table>
@@ -582,7 +607,13 @@ export default function App() {
             {rankTab === "student" ? (
               <table style={S.table}>
                 <thead><tr>{["순위","닉네임","팀","총 자산","수익률"].map(h => <th key={h} style={S.th}>{h}</th>)}</tr></thead>
-                <tbody>{getRankings().map((u,i) => <tr key={u.id} style={{ background: u.id===state.currentUser?"#ede9fe":"" }}><td style={S.td}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td><td style={S.td}>{u.nickname}</td><td style={S.td}>{u.team||"-"}</td><td style={S.td}>{fmt(Math.round(u.total))}원</td><td style={{ ...S.td, color: u.rate>=0?"#10b981":"#ef4444", fontWeight:700 }}>{fmtRate(u.rate)}</td></tr>)}</tbody>
+                <tbody>{getRankings().map((u,i) => <tr key={u.id} style={{ background: u.id===state.currentUser?"#ede9fe":"" }}>
+                  <td style={S.td}>{i===0?"🥇":i===1?"🥈":i===2?"🥉":i+1}</td>
+                  <td style={S.td}>{u.nickname}</td>
+                  <td style={S.td}>{u.team||"-"}</td>
+                  <td style={S.td}>{fmt(Math.round(u.total))}원</td>
+                  <td style={{ ...S.td, color: u.rate>=0?"#10b981":"#ef4444", fontWeight:700 }}>{fmtRate(u.rate)}</td>
+                </tr>)}</tbody>
               </table>
             ) : (
               <table style={S.table}>
