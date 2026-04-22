@@ -103,7 +103,6 @@ const STOCKS = [
   { code: "000157.KS", name: "두산", market: "KOSPI" },
   { code: "025270.KS", name: "서한", market: "KOSPI" },
   { code: "002200.KS", name: "한국제지", market: "KOSPI" },
-  { code: "004170.KS", name: "이마트", market: "KOSPI" },
 
   // ── KOSDAQ 100 ──
   { code: "247540.KQ", name: "에코프로비엠", market: "KOSDAQ" },
