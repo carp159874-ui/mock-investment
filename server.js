@@ -3,15 +3,23 @@ const path = require("path");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
-const FINNHUB_KEY = process.env.FINNHUB_KEY || "d7k69jpr01qnk4odoasgd7k69jpr01qnk4odoat0";
+const FINNHUB_KEY = process.env.FINNHUB_KEY || "";
 
 app.use(express.json());
 
-// Finnhub 심볼 변환
-function toFinnhubSymbol(code) {
-  if (code.endsWith(".KS")) return code; // 그대로
-  if (code.endsWith(".KQ")) return code.replace(".KQ", ".KQ"); // 그대로
-  return code; // 미국 주식
+// 한국 주식 심볼 변환 (005930.KS → 005930, 247540.KQ → 247540)
+function toKrxCode(symbol) {
+  return symbol.replace(".KS", "").replace(".KQ", "");
+}
+
+// 미국 주식인지 확인
+function isUSStock(symbol) {
+  return !symbol.endsWith(".KS") && !symbol.endsWith(".KQ");
+}
+
+// 한국 주식인지 확인
+function isKRStock(symbol) {
+  return symbol.endsWith(".KS") || symbol.endsWith(".KQ");
 }
 
 // 주가 조회 API
@@ -20,49 +28,88 @@ app.get("/api/prices", async (req, res) => {
   if (!symbols) return res.status(400).json({ error: "symbols required" });
 
   const symbolList = symbols.split(",").filter(Boolean);
+  const krSymbols = symbolList.filter(isKRStock);
+  const usSymbols = symbolList.filter(isUSStock);
   const results = {};
 
-  try {
-    // Finnhub은 종목별로 개별 호출 필요 - 병렬로 처리
+  // ── 미국 주식: Finnhub ──────────────────────────────────────────
+  if (usSymbols.length > 0 && FINNHUB_KEY) {
     const chunkSize = 10;
-    for (let i = 0; i < symbolList.length; i += chunkSize) {
-      const chunk = symbolList.slice(i, i + chunkSize);
-      
+    for (let i = 0; i < usSymbols.length; i += chunkSize) {
+      const chunk = usSymbols.slice(i, i + chunkSize);
       await Promise.all(chunk.map(async (symbol) => {
         try {
-          const [quoteRes, prevRes] = await Promise.all([
-            fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`),
-            fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${FINNHUB_KEY}`)
-          ]);
-
-          if (!quoteRes.ok) return;
-          const q = await quoteRes.json();
-
+          const r = await fetch(
+            `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`,
+            { headers: { "User-Agent": "Mozilla/5.0" } }
+          );
+          if (!r.ok) return;
+          const q = await r.json();
           if (q.c && q.c > 0) {
             results[symbol] = {
-              price: q.c,       // 현재가
-              prevClose: q.pc,  // 전일 종가
-              high: q.h,        // 고가
-              low: q.l,         // 저가
-              volume: null,     // Finnhub 무료플랜 거래량 미제공
+              price: q.c,
+              prevClose: q.pc,
+              high: q.h,
+              low: q.l,
+              volume: null,
+              currency: "USD",
             };
           }
         } catch (e) {
-          console.error(`Error fetching ${symbol}:`, e.message);
+          console.error(`Finnhub error ${symbol}:`, e.message);
         }
       }));
-
-      // rate limit 방지 (분당 60회)
-      if (i + chunkSize < symbolList.length) {
-        await new Promise(r => setTimeout(r, 1000));
+      if (i + chunkSize < usSymbols.length) {
+        await new Promise(r => setTimeout(r, 1100));
       }
     }
-
-    res.json(results);
-  } catch (err) {
-    console.error("Price fetch error:", err);
-    res.status(500).json({ error: "Failed to fetch prices" });
   }
+
+  // ── 한국 주식: 네이버 금융 ──────────────────────────────────────
+  if (krSymbols.length > 0) {
+    const chunkSize = 20;
+    for (let i = 0; i < krSymbols.length; i += chunkSize) {
+      const chunk = krSymbols.slice(i, i + chunkSize);
+      await Promise.all(chunk.map(async (symbol) => {
+        const code = toKrxCode(symbol);
+        try {
+          const r = await fetch(
+            `https://m.stock.naver.com/api/stock/${code}/basic`,
+            {
+              headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Referer": "https://m.stock.naver.com/",
+                "Accept": "application/json",
+              }
+            }
+          );
+          if (!r.ok) return;
+          const data = await r.json();
+          const price = parseFloat(data.closePrice?.replace(/,/g, "") || "0");
+          const prevClose = parseFloat(data.compareToPreviousClosePrice?.replace(/,/g, "") || "0");
+          const change = parseFloat(data.fluctuationsRatio || "0");
+          if (price > 0) {
+            const prevPrice = prevClose !== 0 ? price - prevClose : price / (1 + change / 100);
+            results[symbol] = {
+              price: price,
+              prevClose: Math.round(prevPrice),
+              high: parseFloat(data.highPrice?.replace(/,/g, "") || price),
+              low: parseFloat(data.lowPrice?.replace(/,/g, "") || price),
+              volume: parseInt(data.accumulatedTradingVolume?.replace(/,/g, "") || "0"),
+              currency: "KRW",
+            };
+          }
+        } catch (e) {
+          console.error(`Naver error ${symbol}:`, e.message);
+        }
+      }));
+      if (i + chunkSize < krSymbols.length) {
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
+  }
+
+  res.json(results);
 });
 
 // React 빌드 파일 서빙
