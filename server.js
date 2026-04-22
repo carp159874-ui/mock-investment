@@ -14,34 +14,10 @@ let yf = null;
 async function initYahoo() {
   if (yf) return yf;
   const mod = await import("yahoo-finance2");
-  console.log("mod keys:", Object.keys(mod));
-  console.log("mod.default type:", typeof mod.default);
-  console.log("mod.default keys:", mod.default ? Object.keys(mod.default) : "none");
-  
-  // mod.default.default 확인
-  if (mod.default && mod.default.default) {
-    console.log("mod.default.default keys:", Object.keys(mod.default.default));
-    if (typeof mod.default.default.quote === "function") {
-      yf = mod.default.default;
-      console.log("Using mod.default.default");
-      return yf;
-    }
-  }
-  if (mod.default && typeof mod.default.quote === "function") {
-    yf = mod.default;
-    console.log("Using mod.default");
-    return yf;
-  }
-  // 모든 키 탐색
-  for (const key of Object.keys(mod)) {
-    const val = mod[key];
-    if (val && typeof val.quote === "function") {
-      yf = val;
-      console.log("Using mod." + key);
-      return yf;
-    }
-  }
-  throw new Error("Cannot find quote function in yahoo-finance2");
+  const YahooFinance = mod.default;
+  yf = new YahooFinance();
+  console.log("Yahoo instance keys:", Object.getOwnPropertyNames(Object.getPrototypeOf(yf)).join(", "));
+  return yf;
 }
 
 app.get("/api/prices", async (req, res) => {
