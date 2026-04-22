@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+const https = require("https");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -10,92 +11,104 @@ function isUSStock(symbol) {
   return !symbol.endsWith(".KS") && !symbol.endsWith(".KQ");
 }
 
+// https 모듈로 직접 요청 (fetch 차단 우회)
+function httpsGet(url, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const options = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: "GET",
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9,ko;q=0.8",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "sec-ch-ua": '"Chromium";v="122", "Not(A:Brand";v="24"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-site",
+        ...headers,
+      },
+    };
+
+    const req = https.request(options, (res) => {
+      const chunks = [];
+      // gzip 처리
+      let stream = res;
+      if (res.headers["content-encoding"] === "gzip") {
+        const zlib = require("zlib");
+        stream = res.pipe(zlib.createGunzip());
+      } else if (res.headers["content-encoding"] === "br") {
+        const zlib = require("zlib");
+        stream = res.pipe(zlib.createBrotliDecompress());
+      } else if (res.headers["content-encoding"] === "deflate") {
+        const zlib = require("zlib");
+        stream = res.pipe(zlib.createInflate());
+      }
+      stream.on("data", chunk => chunks.push(chunk));
+      stream.on("end", () => {
+        try {
+          const body = Buffer.concat(chunks).toString("utf8");
+          resolve({ status: res.statusCode, body });
+        } catch (e) {
+          reject(e);
+        }
+      });
+      stream.on("error", reject);
+    });
+    req.on("error", reject);
+    req.setTimeout(10000, () => { req.destroy(); reject(new Error("timeout")); });
+    req.end();
+  });
+}
+
 app.get("/api/prices", async (req, res) => {
   const { symbols } = req.query;
   if (!symbols) return res.status(400).json({ error: "symbols required" });
 
   const symbolList = [...new Set(symbols.split(",").filter(Boolean))];
   const results = {};
-
-  // Yahoo Finance v8 API - 20개씩 청크 처리
   const chunkSize = 20;
+
   for (let i = 0; i < symbolList.length; i += chunkSize) {
     const chunk = symbolList.slice(i, i + chunkSize);
     const symbolStr = chunk.join(",");
 
     try {
-      const response = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodeURIComponent(symbolStr)}&range=1d&interval=1d`,
-        {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "application/json",
-            "Accept-Language": "en-US,en;q=0.9",
-          },
-        }
-      );
+      // Yahoo Finance v7 quote API
+      const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbolStr)}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketDayHigh,regularMarketDayLow,regularMarketVolume,currency`;
+      const { status, body } = await httpsGet(url);
 
-      if (response.ok) {
-        const data = await response.json();
-        const sparkData = data?.spark?.result || [];
-        sparkData.forEach(item => {
-          if (!item?.symbol || !item?.response?.[0]) return;
-          const r = item.response[0];
-          const meta = r.meta;
-          if (meta?.regularMarketPrice) {
-            results[item.symbol] = {
-              price: meta.regularMarketPrice,
-              prevClose: meta.chartPreviousClose || meta.previousClose || meta.regularMarketPrice,
-              high: meta.regularMarketDayHigh || meta.regularMarketPrice,
-              low: meta.regularMarketDayLow || meta.regularMarketPrice,
-              volume: meta.regularMarketVolume || null,
-              currency: meta.currency || (isUSStock(item.symbol) ? "USD" : "KRW"),
+      if (status === 200) {
+        const data = JSON.parse(body);
+        const quotes = data?.quoteResponse?.result || [];
+        quotes.forEach(q => {
+          if (q.regularMarketPrice && q.regularMarketPrice > 0) {
+            results[q.symbol] = {
+              price: q.regularMarketPrice,
+              prevClose: q.regularMarketPreviousClose || q.regularMarketPrice,
+              high: q.regularMarketDayHigh || q.regularMarketPrice,
+              low: q.regularMarketDayLow || q.regularMarketPrice,
+              volume: q.regularMarketVolume || null,
+              currency: q.currency || (isUSStock(q.symbol) ? "USD" : "KRW"),
             };
           }
         });
+      } else {
+        console.error(`Yahoo v7 status ${status} for chunk ${i}`);
       }
     } catch (e) {
-      console.error(`Spark API error chunk ${i}:`, e.message);
-    }
-
-    // 실패한 종목은 v7 quote API로 폴백
-    const failed = chunk.filter(s => !results[s]);
-    if (failed.length > 0) {
-      try {
-        const r2 = await fetch(
-          `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(failed.join(","))}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketDayHigh,regularMarketDayLow,regularMarketVolume,currency`,
-          {
-            headers: {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-              "Accept": "application/json",
-              "Accept-Language": "en-US,en;q=0.9",
-              "Accept-Encoding": "gzip, deflate, br",
-            },
-          }
-        );
-        if (r2.ok) {
-          const d2 = await r2.json();
-          const quotes = d2?.quoteResponse?.result || [];
-          quotes.forEach(q => {
-            if (q.regularMarketPrice) {
-              results[q.symbol] = {
-                price: q.regularMarketPrice,
-                prevClose: q.regularMarketPreviousClose || q.regularMarketPrice,
-                high: q.regularMarketDayHigh || q.regularMarketPrice,
-                low: q.regularMarketDayLow || q.regularMarketPrice,
-                volume: q.regularMarketVolume || null,
-                currency: q.currency || (isUSStock(q.symbol) ? "USD" : "KRW"),
-              };
-            }
-          });
-        }
-      } catch (e2) {
-        console.error(`Quote API fallback error:`, e2.message);
-      }
+      console.error(`Error chunk ${i}:`, e.message);
     }
 
     if (i + chunkSize < symbolList.length) {
-      await new Promise(r => setTimeout(r, 200));
+      await new Promise(r => setTimeout(r, 300));
     }
   }
 
