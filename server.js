@@ -2,12 +2,9 @@ const express = require("express");
 const path = require("path");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
-
-// React 빌드 파일 서빙
-app.use(express.static(path.join(__dirname, "build")));
 
 // Yahoo Finance 주가 조회 API
 app.get("/api/prices", async (req, res) => {
@@ -17,7 +14,6 @@ app.get("/api/prices", async (req, res) => {
   const symbolList = symbols.split(",").filter(Boolean);
 
   try {
-    // Yahoo Finance v8 API 사용
     const results = {};
     const chunkSize = 20;
 
@@ -54,9 +50,8 @@ app.get("/api/prices", async (req, res) => {
         };
       });
 
-      // rate limit 방지
       if (i + chunkSize < symbolList.length) {
-        await new Promise((r) => setTimeout(r, 200));
+        await new Promise((r) => setTimeout(r, 300));
       }
     }
 
@@ -67,11 +62,14 @@ app.get("/api/prices", async (req, res) => {
   }
 });
 
+// React 빌드 파일 서빙
+app.use(express.static(path.join(__dirname, "build")));
+
 // SPA fallback
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
