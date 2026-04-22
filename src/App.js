@@ -341,32 +341,29 @@ export default function App() {
   const fetchPrices = useCallback(async () => {
     try {
       const results = {};
-      const chunkSize = 20;
-      const allSymbols = STOCKS.map(s => s.code);
-      const unique = [...new Set(allSymbols)];
+      const chunkSize = 10;
+      const unique = [...new Set(STOCKS.map(s => s.code))];
 
       for (let i = 0; i < unique.length; i += chunkSize) {
         const chunk = unique.slice(i, i + chunkSize);
         const symbolStr = chunk.join(",");
+        const yahooUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbolStr)}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketDayHigh,regularMarketDayLow,regularMarketVolume,currency`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(yahooUrl)}`;
         try {
-          const res = await fetch(
-            `https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodeURIComponent(symbolStr)}&range=1d&interval=1d`,
-            { headers: { "Accept": "application/json" } }
-          );
+          const res = await fetch(proxyUrl);
           if (res.ok) {
-            const data = await res.json();
-            const items = data?.spark?.result || [];
-            items.forEach(item => {
-              if (!item?.symbol || !item?.response?.[0]) return;
-              const meta = item.response[0].meta;
-              if (meta?.regularMarketPrice) {
-                results[item.symbol] = {
-                  price: meta.regularMarketPrice,
-                  prevClose: meta.chartPreviousClose || meta.regularMarketPrice,
-                  high: meta.regularMarketDayHigh || meta.regularMarketPrice,
-                  low: meta.regularMarketDayLow || meta.regularMarketPrice,
-                  volume: meta.regularMarketVolume || null,
-                  currency: meta.currency || "KRW",
+            const outer = await res.json();
+            const data = JSON.parse(outer.contents);
+            const quotes = data?.quoteResponse?.result || [];
+            quotes.forEach(q => {
+              if (q.regularMarketPrice) {
+                results[q.symbol] = {
+                  price: q.regularMarketPrice,
+                  prevClose: q.regularMarketPreviousClose || q.regularMarketPrice,
+                  high: q.regularMarketDayHigh || q.regularMarketPrice,
+                  low: q.regularMarketDayLow || q.regularMarketPrice,
+                  volume: q.regularMarketVolume || null,
+                  currency: q.currency || ((!q.symbol.endsWith(".KS") && !q.symbol.endsWith(".KQ")) ? "USD" : "KRW"),
                 };
               }
             });
@@ -374,7 +371,7 @@ export default function App() {
         } catch (e) {
           console.error("chunk error:", e);
         }
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 300));
       }
       setPrices(results);
     } catch (e) { console.error("주가 로드 실패:", e); }
