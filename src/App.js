@@ -340,11 +340,43 @@ export default function App() {
 
   const fetchPrices = useCallback(async () => {
     try {
-      const symbols = STOCKS.map(s => s.code).join(",");
-      const res = await fetch(`/api/prices?symbols=${encodeURIComponent(symbols)}`);
-      if (!res.ok) throw new Error("fetch failed");
-      const data = await res.json();
-      setPrices(data);
+      const results = {};
+      const chunkSize = 20;
+      const allSymbols = STOCKS.map(s => s.code);
+      const unique = [...new Set(allSymbols)];
+
+      for (let i = 0; i < unique.length; i += chunkSize) {
+        const chunk = unique.slice(i, i + chunkSize);
+        const symbolStr = chunk.join(",");
+        try {
+          const res = await fetch(
+            `https://query1.finance.yahoo.com/v8/finance/spark?symbols=${encodeURIComponent(symbolStr)}&range=1d&interval=1d`,
+            { headers: { "Accept": "application/json" } }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const items = data?.spark?.result || [];
+            items.forEach(item => {
+              if (!item?.symbol || !item?.response?.[0]) return;
+              const meta = item.response[0].meta;
+              if (meta?.regularMarketPrice) {
+                results[item.symbol] = {
+                  price: meta.regularMarketPrice,
+                  prevClose: meta.chartPreviousClose || meta.regularMarketPrice,
+                  high: meta.regularMarketDayHigh || meta.regularMarketPrice,
+                  low: meta.regularMarketDayLow || meta.regularMarketPrice,
+                  volume: meta.regularMarketVolume || null,
+                  currency: meta.currency || "KRW",
+                };
+              }
+            });
+          }
+        } catch (e) {
+          console.error("chunk error:", e);
+        }
+        await new Promise(r => setTimeout(r, 200));
+      }
+      setPrices(results);
     } catch (e) { console.error("주가 로드 실패:", e); }
     finally { setPriceLoading(false); }
   }, []);
